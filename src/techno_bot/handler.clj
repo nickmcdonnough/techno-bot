@@ -65,7 +65,5 @@
       wrap-json-body))
 
 (defn -main []
-  (defonce ^:private server
-    (ring.adapter.jetty/run-jetty #'secured-site {:port 8080 :join? false}))
   server)
 
