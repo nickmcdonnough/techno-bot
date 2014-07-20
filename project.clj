@@ -9,8 +9,7 @@
                  [org.clojure/data.json "0.2.5"]
                  [environ "0.5.0"]]
   :plugins [[lein-ring "0.8.11"]]
-  :ring {:handler techno-bot.handler/app
-         :init}
+  :ring {:handler techno-bot.handler/app}
   :main techno-bot.handler
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
