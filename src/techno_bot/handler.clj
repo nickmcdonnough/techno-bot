@@ -32,12 +32,14 @@
                                        :icon_emoji ":de:"
                                        :text message})}))
 
-(def user-exec {"youtube" (fn [user args]
-                            (let [yt-response (get-youtube-data args)
-                                  url (yt-response :url)
-                                  title (yt-response :title)
-                                  message (build-bot-message user url title)]
-                              (post-to-slack message)))})
+(defn youtube [user args]
+  (let [yt-response (get-youtube-data args)]
+    (build-bot-message
+      user
+      (yt-response :url)
+      (yt-response :title))))
+
+(def user-exec {"youtube" #(post-to-slack (youtube %1 %2))})
 
 (defn exec-user-command [mymap]
   (let [text (mymap :text)
