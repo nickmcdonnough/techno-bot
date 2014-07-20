@@ -54,7 +54,11 @@
 ; add user back to top user-exec call
 
 (defn parse-user-text [hook]
-  (exec-user-command (apply hash-map (flatten (map #(clojure.string/split % #"=") (clojure.string/split hook #"&"))))))
+  (->> (string/split hook #"&")
+       (map #(string/split % #"="))
+       (flatten)
+       (apply hash-map)
+       (exec-user-command)))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
