@@ -3,6 +3,7 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [ring.middleware.json :refer :all]
+            [ring.adapter.jetty :as jetty]
             [clj-http.client :as client]
             [clojure.string :as string]
             [clojure.data.json :as json]
@@ -43,18 +44,21 @@
                                   message (build-bot-message user url title)]
                               (post-to-slack message)))})
 
-(defn parse-user-text [hook]
-  (let [text (hook "text")
-        user (hook "user_name")
-        string-vec (string/split text #"\s")
+(defn exec-user-command [mymap]
+  (let [text (mymap "text")
+        user (mymap "user_name")
+        string-vec (string/split text #"\+")
         command (nth string-vec 1)
         search-terms (nthrest string-vec 2)]
     ((user-exec command) user search-terms)))
 ; add user back to top user-exec call
 
+(defn parse-user-text [hook]
+  (exec-user-command (apply hash-map (flatten (map #(clojure.string/split % #"=") (clojure.string/split hook #"&"))))))
+
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (POST "/mks/" {params :body} (parse-user-text params))
+  (POST "/mks/" {params :body} (parse-user-text (slurp params)))
   (POST "/hello-world/" {params :body} (hello-world-hook params))
   (route/resources "/")
   (route/resources "/mks/")
@@ -63,3 +67,5 @@
 (def app
   (-> (handler/site app-routes)
       wrap-json-body))
+
+(defn -main [] (jetty/run-jetty app-routes {:port 5000}))
