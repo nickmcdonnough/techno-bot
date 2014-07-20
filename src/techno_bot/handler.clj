@@ -63,7 +63,3 @@
 (def app
   (-> (handler/site app-routes)
       wrap-json-body))
-
-(defn -main []
-  server)
-
