@@ -1,1 +1,1 @@
-web: java -cp target/technobot.jar clojure.main -m technobot.web
+web: java -cp target/technobot.jar clojure.main -m techno-bot.core
