@@ -11,6 +11,7 @@
   :plugins [[lein-ring "0.8.11"]]
   :ring {:handler techno-bot.core/app}
   :main techno-bot.core
+  :uberjar-name "technobot.jar"
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring-mock "0.1.5"]]}})
