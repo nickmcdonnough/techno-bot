@@ -26,7 +26,6 @@
                                 (build-bot-message)
                                 (post-to-slack))}) 
 
-
 (defn exec-user-command [mymap]
   (let [text (mymap :text)
         user (mymap :user)

@@ -1,6 +1,6 @@
-(defproject techno-bot "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject techno-bot "0.1.0"
+  :description "for #techno-enthusiasts on MKSStudents"
+  :url "http://www.nickmcd.com"
   :dependencies [[ring-server "0.3.1"]
                  [ring/ring-json "0.3.1"]
                  [org.clojure/clojure "1.6.0"]
