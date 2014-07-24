@@ -26,7 +26,7 @@
 (def user-exec {"youtube" #(->> (assoc (yt/get-youtube-data %2) :user %)
                                 (build-bot-message)
                                 (post-to-slack))
-                "weather" #(post-to-slack (weather/austin))})
+                "weather" #(post-to-slack (weather/austin) #_%&)})
                 ;"what" #(->> (assoc (what/parse %2) :user %))})
 
 (defn exec-user-command [mymap]
