@@ -1,5 +1,6 @@
 (ns techno-bot.core
   (:require [techno-bot.commands.youtube :as yt]
+            [techno-bot.commands.weather :as weather]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
@@ -24,7 +25,9 @@
 
 (def user-exec {"youtube" #(->> (assoc (yt/get-youtube-data %2) :user %)
                                 (build-bot-message)
-                                (post-to-slack))}) 
+                                (post-to-slack))
+                "weather" #(post-to-slack (weather/austin))})
+                ;"what" #(->> (assoc (what/parse %2) :user %))})
 
 (defn exec-user-command [mymap]
   (let [text (mymap :text)
