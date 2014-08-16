@@ -23,12 +23,13 @@
                                        :icon_emoji ":de:"
                                        :text message})}))
 
-(def user-exec {"youtube" #(-> %2
-                               yt/get-youtube-data
-                               (assoc :user %1)
-                               build-bot-message
-                               post-to-slack)
-                "weather" #(post-to-slack (weather/austin) #_%&)})
+(def user-exec {"youtube" (fn [user search-terms]
+                            (-> search-terms
+                                yt/get-youtube-data
+                                (assoc :user user)
+                                build-bot-message
+                                post-to-slack))
+                "weather" (fn [& _] (post-to-slack (weather/austin)))})
                 ;"what" #(-> %2 what/parse (assoc :user %1))})
 
 (defn exec-user-command [{:keys [user text]}]
