@@ -23,19 +23,20 @@
                                        :icon_emoji ":de:"
                                        :text message})}))
 
-(def user-exec {"youtube" #(->> (assoc (yt/get-youtube-data %2) :user %)
-                                (build-bot-message)
-                                (post-to-slack))
+(def user-exec {"youtube" #(-> %2
+                               yt/get-youtube-data
+                               (assoc :user %1)
+                               build-bot-message
+                               post-to-slack)
                 "weather" #(post-to-slack (weather/austin) #_%&)})
-                ;"what" #(->> (assoc (what/parse %2) :user %))})
+                ;"what" #(-> %2 what/parse (assoc :user %1))})
 
 (defn exec-user-command [{:keys [user text]}]
   (let [[_ command & search-terms] (string/split text #"\s")]
     ((user-exec command) user search-terms)))
 
 (defn process-incoming-webhook [username text]
-  (-> {:user username :text text}
-      exec-user-command))
+  (exec-user-command {:user username :text text}))
 
 (defroutes app-routes
   (GET "/" [] "technobot")
