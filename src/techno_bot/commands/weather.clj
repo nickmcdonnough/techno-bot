@@ -12,19 +12,21 @@
 
 (defn get-austin-weather []
   (let [response ((client/get (conditions-url "Austin" "TX")) :body)
-        current-weather ((json/read-json response) :current_observation)]
-    {:temperature (:temperature_string current-weather)
-     :wind-type (:wind_string current-weather)
-     :wind-direction (:wind_dir current-weather)
-     :wind-speed (:wind_mph current-weather)
-     :humidity (:relative_humidity current-weather)}))
+        {:keys [current_observation]} (json/read-json response)
+        {:keys [temperature_string relative_humidity wind_string wind_mph wind_dir]} current_observation]
+    {:temperature temperature_string
+     :humidity relative_humidity
+     :wind-type wind_string
+     :wind-speed wind_mph
+     :wind-direction wind_dir}))
 
-(defn austin-weather-string [weather-map]
-  (str "The current temperature in Austin is " (:temperature weather-map) " "
-       "with " (:humidity weather-map) " humidity. "
-       (if (not= (:wind-type weather-map) "Calm")
-         (str "There is a " (:wind-type weather-map) " wind blowing at " (:wind-speed weather-map)
-              " from the " (:wind-direction weather-map) "."))))
+(defn austin-weather-string [{:keys [temperature humidity wind-type
+                                     wind-speed wind-direction]}]
+  (str "The current temperature in Austin is " temperature " "
+       "with " humidity " humidity. "
+       (when (not= wind-type "Calm")
+         (str "There is a " wind-type " wind blowing at " wind-speed
+              " from the " wind-direction "."))))
 
 (defn austin []
   (austin-weather-string (get-austin-weather)))

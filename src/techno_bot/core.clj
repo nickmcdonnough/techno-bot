@@ -13,8 +13,8 @@
 
 (def slack-post-url (environ/env :slack-api-url))
 
-(defn build-bot-message [ytmap]
-  (str "Here you go " (:user ytmap) ": " "<" (:url ytmap) "|" (:title ytmap) ">."))
+(defn build-bot-message [{:keys [user url title]}]
+  (str "Here you go " user ": " "<" url "|" title ">."))
 
 (defn post-to-slack [message]
   (client/post slack-post-url
@@ -29,12 +29,8 @@
                 "weather" #(post-to-slack (weather/austin) #_%&)})
                 ;"what" #(->> (assoc (what/parse %2) :user %))})
 
-(defn exec-user-command [mymap]
-  (let [text (mymap :text)
-        user (mymap :user)
-        string-vec (string/split text #"\s")
-        command (nth string-vec 1)
-        search-terms (nthrest string-vec 2)]
+(defn exec-user-command [{:keys [user text]}]
+  (let [[_ command & search-terms] (string/split text #"\s")]
     ((user-exec command) user search-terms)))
 
 (defn process-incoming-webhook [username text]
