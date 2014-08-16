@@ -13,11 +13,11 @@
 (defn get-austin-weather []
   (let [response ((client/get (conditions-url "Austin" "TX")) :body)
         current-weather ((json/read-json response) :current_observation)]
-    (assoc {} :temperature (:temperature_string current-weather)
-              :wind-type (:wind_string current-weather)
-              :wind-direction (:wind_dir current-weather)
-              :wind-speed (:wind_mph current-weather)
-              :humidity (:relative_humidity current-weather))))
+    {:temperature (:temperature_string current-weather)
+     :wind-type (:wind_string current-weather)
+     :wind-direction (:wind_dir current-weather)
+     :wind-speed (:wind_mph current-weather)
+     :humidity (:relative_humidity current-weather)}))
 
 (defn austin-weather-string [weather-map]
   (str "The current temperature in Austin is " (:temperature weather-map) " "

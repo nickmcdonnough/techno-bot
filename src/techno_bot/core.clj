@@ -38,7 +38,7 @@
     ((user-exec command) user search-terms)))
 
 (defn process-incoming-webhook [username text]
-  (-> (assoc {} :user username :text text)
+  (-> {:user username :text text}
       exec-user-command))
 
 (defroutes app-routes
