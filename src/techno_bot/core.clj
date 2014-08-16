@@ -47,5 +47,4 @@
 
 (def app (wrap-params app-routes))
 
-(defn -main [] (jetty/run-jetty (wrap-params app-routes) {:port 5000}))
-
+(defn -main [] (jetty/run-jetty (wrap-params #'app-routes) {:port 5000}))
