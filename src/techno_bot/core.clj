@@ -1,6 +1,7 @@
 (ns techno-bot.core
   (:require [techno-bot.commands.youtube :as yt]
             [techno-bot.commands.weather :as weather]
+            [techno-bot.commands.boteval :as beval]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
@@ -26,7 +27,7 @@
 (defmulti do-command (fn [command _ _] command))
 
 (defmethod do-command :default [command user _]
-  (post-to-slack "Sorry, " user ", I don't know about " command "."))
+  (post-to-slack (str "Sorry, " user ", I don't know about " command ".")))
 
 (defmethod do-command "youtube" [_ user search-terms]
   (-> search-terms
@@ -38,8 +39,11 @@
 (defmethod do-command "weather" [& _]
   (post-to-slack (weather/austin)))
 
-;; (defmethod do-command "what" [_ user search-terms]
-;;   (-> search-terms what/parse (assoc :user user)))
+(defmethod do-command "eval" [_ user exp]
+  (let [result (beval/evaluate (string/join " " exp))]
+    (if result
+      (post-to-slack (str user ", your expression evaluated to: " (print-str result)))
+      (post-to-slack (str user ", I could not evaluate that expression.")))))
 
 (defn exec-user-command [{:keys [user text]}]
   (let [[_ command & search-terms] (string/split text #"\s")]
