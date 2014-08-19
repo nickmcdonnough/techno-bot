@@ -11,6 +11,5 @@
 
 (defn get-youtube-data [args]
   (let [response (json/read-json ((client/get (youtube-query-url args)) :body))]
-    (assoc {} :url (-> response :feed :entry first :link first :href)
-              :title (-> response :feed :entry first :title :$t))))
-
+    {:url (-> response :feed :entry first :link first :href)
+     :title (-> response :feed :entry first :title :$t)}))

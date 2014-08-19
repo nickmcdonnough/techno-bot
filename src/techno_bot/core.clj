@@ -13,8 +13,8 @@
 
 (def slack-post-url (environ/env :slack-api-url))
 
-(defn build-bot-message [ytmap]
-  (str "Here you go " (:user ytmap) ": " "<" (:url ytmap) "|" (:title ytmap) ">."))
+(defn build-bot-message [{:keys [user url title]}]
+  (str "Here you go " user ": " "<" url "|" title ">."))
 
 (defn post-to-slack [message]
   (client/post slack-post-url
@@ -23,23 +23,30 @@
                                        :icon_emoji ":de:"
                                        :text message})}))
 
-(def user-exec {"youtube" #(->> (assoc (yt/get-youtube-data %2) :user %)
-                                (build-bot-message)
-                                (post-to-slack))
-                "weather" #(post-to-slack (weather/austin) #_%&)})
-                ;"what" #(->> (assoc (what/parse %2) :user %))})
+(defmulti do-command (fn [command _ _] command))
 
-(defn exec-user-command [mymap]
-  (let [text (mymap :text)
-        user (mymap :user)
-        string-vec (string/split text #"\s")
-        command (nth string-vec 1)
-        search-terms (nthrest string-vec 2)]
-    ((user-exec command) user search-terms)))
+(defmethod do-command :default [command user _]
+  (post-to-slack "Sorry, " user ", I don't know about " command "."))
+
+(defmethod do-command "youtube" [_ user search-terms]
+  (-> search-terms
+      yt/get-youtube-data
+      (assoc :user user)
+      build-bot-message
+      post-to-slack))
+
+(defmethod do-command "weather" [& _]
+  (post-to-slack (weather/austin)))
+
+;; (defmethod do-command "what" [_ user search-terms]
+;;   (-> search-terms what/parse (assoc :user user)))
+
+(defn exec-user-command [{:keys [user text]}]
+  (let [[_ command & search-terms] (string/split text #"\s")]
+    (do-command command user search-terms)))
 
 (defn process-incoming-webhook [username text]
-  (-> (assoc {} :user username :text text)
-      exec-user-command))
+  (exec-user-command {:user username :text text}))
 
 (defroutes app-routes
   (GET "/" [] "technobot")
@@ -50,5 +57,4 @@
 
 (def app (wrap-params app-routes))
 
-(defn -main [] (jetty/run-jetty (wrap-params app-routes) {:port 5000}))
-
+(defn -main [] (jetty/run-jetty (wrap-params #'app-routes) {:port 5000}))
