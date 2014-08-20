@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]))
 
 (defn is-safe? [exp]
-  (string/blank? (re-matches #".*Runtime.*|.*shell.*" exp)))
+  (string/blank? (re-matches #".*Runtime.*|.*shell.*|.*System.*" exp)))
 
 (defn evaluate [exp]
   (if (is-safe? exp)
