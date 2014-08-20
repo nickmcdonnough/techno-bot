@@ -25,8 +25,7 @@
   (str "The current temperature in Austin is " temperature " "
        "with " humidity " humidity. "
        (when (not= wind-type "Calm")
-         (str "There is a " wind-type " wind blowing at " wind-speed
-              " from the " wind-direction "."))))
+         (str "The wind is coming " (string/replace wind-type "F" "f"))))
 
 (defn austin []
   (austin-weather-string (get-austin-weather)))
