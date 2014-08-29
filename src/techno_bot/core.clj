@@ -36,8 +36,10 @@
       build-bot-message
       post-to-slack))
 
-(defmethod do-command "weather" [& _]
-  (post-to-slack (weather/austin)))
+(defmethod do-command "weather" [_ user city]
+  (if (= city "sf")
+    (post-to-slack (weather/get-current-conditions "San Fransisco" "CA"))
+    (post-to-slack (weather/get-current-conditions "Austin" "TX"))))
 
 (defmethod do-command "eval" [_ user exp]
   (let [result (beval/evaluate (string/join " " exp))]

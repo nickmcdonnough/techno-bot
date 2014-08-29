@@ -10,8 +10,8 @@
 (defn conditions-url [city statecode]
   (str "http://api.wunderground.com/api/" api-key "/conditions/q/" statecode "/" city ".json"))
 
-(defn get-austin-weather []
-  (let [response ((client/get (conditions-url "Austin" "TX")) :body)
+(defn make-api-call [city state]
+  (let [response ((client/get (conditions-url city state)) :body)
         {:keys [current_observation]} (json/read-json response)
         {:keys [temperature_string relative_humidity wind_string wind_mph wind_dir]} current_observation]
     {:temperature temperature_string
@@ -20,12 +20,12 @@
      :wind-speed wind_mph
      :wind-direction wind_dir}))
 
-(defn austin-weather-string [{:keys [temperature humidity wind-type
-                                     wind-speed wind-direction]}]
-  (str "The current temperature in Austin is " temperature " "
+(defn build-weather-string [city {:keys [temperature humidity wind-type
+                                         wind-speed wind-direction]}]
+  (str "The current temperature in " city " is " temperature " "
        "with " humidity " humidity. "
        (when (not= wind-type "Calm")
          (str "The wind is coming " (string/replace wind-type "F" "f")))))
 
-(defn austin []
-  (austin-weather-string (get-austin-weather)))
+(defn get-current-conditions [city state]
+  (build-weather-string city (make-api-call city state)))
